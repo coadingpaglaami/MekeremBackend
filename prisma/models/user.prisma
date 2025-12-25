@@ -1,0 +1,15 @@
+enum Role {
+    TRAVELLER
+    CARRIER
+    ADMIN
+}
+
+model User {
+    id String @default(uuid()) @id @db.Uuid
+    email String @unique
+    name String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    role Role 
+    password String
+}
