@@ -8,7 +8,7 @@ console.log('Prisma DATABASE URL:', url);
 @Injectable()
 export class PrismaService extends PrismaClient {
   constructor() {
-    const adapter = new PrismaPg({ url });
+    const adapter = new PrismaPg({ connectionString: url });
     console.log('Prisma Adapter:', adapter);
     super({ adapter });
   }

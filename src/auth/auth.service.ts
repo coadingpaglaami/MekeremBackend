@@ -2,6 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateAuthDto, SignUpResponse } from './dto/create-auth.dto.js';
 import { PrismaService } from '../database/prisma.service.js';
 import * as bcrypt from 'bcrypt';
+import { Role } from 'src/database/prisma-client/enums.js';
 
 @Injectable()
 export class AuthService {
@@ -13,7 +14,6 @@ export class AuthService {
       throw new BadRequestException('All fields are required');
     }
     // console.log('EMAIL VALUE:', email, typeof email);
-    console.log('All User', this.prisma.user);
     const existingUser = await this.prisma.user.findUnique({
       where: { email },
     });
@@ -37,6 +37,7 @@ export class AuthService {
         user: {
           name: newUser.name,
           email: newUser.email,
+          role: newUser.role as Role,
         },
       };
     } catch (error) {
