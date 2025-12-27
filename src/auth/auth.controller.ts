@@ -79,4 +79,9 @@ export class AuthController {
   async googleCallback(@Req() req:Request, @Res() res:Response): Promise<any> {
     return await this.authService.googleAuth(req, res);
   }
+  @Post('logout')
+  @UseGuards(AuthGuard('jwt'))
+  async logout(@Req() req: Request): Promise<any> {
+    return await this.authService.logout(req);
+  }
 }

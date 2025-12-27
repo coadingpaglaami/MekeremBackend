@@ -271,4 +271,15 @@ export class AuthService {
 
     return; // important, do not return the object
   }
+  async logout(req: Request): Promise<any> {
+    const authHeader = req.user;
+    const userId = (authHeader as any).sub;
+    console.log('Logging out user with ID:', userId);
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: { refreshToken: null },
+    });
+    return { message: 'Logout successful' };
+  }
 }
+
