@@ -13,7 +13,7 @@ import {
 } from './dto/create-auth.dto.js';
 import { PrismaService } from '../database/prisma.service.js';
 import * as bcrypt from 'bcrypt';
-import { Role } from 'src/database/prisma-client/enums.js';
+import { Role } from '../database/prisma-client/enums.js';
 import { JwtService } from '@nestjs/jwt';
 import { MailService } from '../mail/mail.service.js';
 import { Request, Response } from 'express';
@@ -212,43 +212,63 @@ export class AuthService {
       refreshToken: refreshToken,
     };
   }
-  async googleAuth(req: Request, res: Response): Promise<any> {
-    if (!req) {
-      throw new BadRequestException('No user from google');
+
+  async googleAuth(req: Request, res: Response): Promise<void> {
+    const googleUser = req.user as any;
+    const { email, roleIntent } = googleUser;
+    const allowedRoles = ['CARRIER', 'TRAVELLER'] as const;
+
+    // roleIntent is string, not object
+    if (!roleIntent || !allowedRoles.includes(roleIntent.role)) {
+      throw new BadRequestException('Invalid role intent');
     }
-    if (!req.user) {
-      throw new BadRequestException('No user from google');
-    }
+
+    // check existing user
     let existingUser = await this.prisma.user.findUnique({
-      where: { id: req.user['sub'] },
+      where: { email },
     });
-    if (existingUser) {
-      const payload = {
-        sub: existingUser.id,
-        email: existingUser.email,
-        name: existingUser.name,
-        role: existingUser.role,
-      };
-      const access_token = await this.jwtService.signAsync(payload);
-      const refresh_token = await this.jwtService.signAsync(payload, {
-        expiresIn: '7d',
+
+    if (!existingUser) {
+      existingUser = await this.prisma.user.create({
+        data: {
+          name: `${googleUser.firstName} ${googleUser.lastName}`.trim(),
+          email: googleUser.email,
+          oauthProvider: 'google',
+          role: roleIntent.role
+        },
       });
-      existingUser = await this.prisma.user.update({
-        where: { id: existingUser.id },
-        data: { refreshToken: refresh_token },
-      });
-      return {
-        accessToken: access_token,
-        refreshToken: refresh_token,
-      };
     }
-    await this.prisma.user.create({
-      data: {
-        name: req.user['firstName'] + ' ' + req.user['lastName'],
-        email: req.user['email'],
-        oauthProvider: 'google',
-        role: Role.TRAVELLER,
-      },
+
+    // JWT payload
+    const payload = {
+      sub: existingUser.id,
+      email: existingUser.email,
+      name: existingUser.name,
+      role: existingUser.role,
+    };
+
+    const accessToken = await this.jwtService.signAsync(payload);
+    const refreshToken = await this.jwtService.signAsync(payload, {
+      expiresIn: '7d',
     });
+
+    // update refresh token in DB
+    await this.prisma.user.update({
+      where: { id: existingUser.id },
+      data: { refreshToken },
+    });
+
+    // ✅ Send response and end request
+    res.json({
+      user: {
+        name: existingUser.name,
+        email: existingUser.email,
+        role: existingUser.role,
+      },
+      accessToken,
+      refreshToken,
+    });
+
+    return; // important, do not return the object
   }
 }
