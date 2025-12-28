@@ -6,10 +6,13 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MailModule } from '../mail/mail.module.js';
 import { GoogleStrategy } from './gootle.strategy.js';
+import { JwtStrategy } from './jwt.strategy.js';
+import { PassportModule } from '@nestjs/passport';
 
 @Module({
   imports: [
     PrismaModule,
+    PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
@@ -21,6 +24,6 @@ import { GoogleStrategy } from './gootle.strategy.js';
     MailModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService, GoogleStrategy],
+  providers: [AuthService, GoogleStrategy, JwtStrategy],
 })
 export class AuthModule {}

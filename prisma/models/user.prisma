@@ -16,4 +16,29 @@ model User {
     otp String?
     otpExpiry DateTime?
     oauthProvider String?
+    carrierProfile CarrierProfile?
+}
+
+
+model CarrierProfile {
+    id String @default(uuid()) @id @db.Uuid
+    userId String @unique @db.Uuid  // <-- Add @db.Uuid here
+    user User @relation(fields: [userId], references: [id])
+    dateOfBirth DateTime
+    nationality String
+    phoneNumber String
+    nidNumber String
+    nidFrontImage String?
+    nidBackImage String?
+    passportImage String?
+    drivingLicenseFront String?
+    drivingLicenseBack String?
+    selfies String[]
+    addressLineOne String?
+    addressLineTwo String?
+    city String?
+    state String?
+    postalCode String?
+    country String?
+    isVerified Boolean? @default(false)
 }
