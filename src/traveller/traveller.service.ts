@@ -94,4 +94,8 @@ export class TravellerService {
     });
     return updatedCarrierProfile;
   }
+
+  async createTrip(req: Request, tripDetails: any): Promise<any> {
+    return { message: 'Trip created successfully', tripDetails  };
+  }
 }
