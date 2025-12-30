@@ -1,0 +1,32 @@
+enum TripStatus {
+  PENDING
+  ONGOING
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+}
+
+model Trip {
+  id               String   @id @default(uuid()) @db.Uuid
+  travellerId      String   @db.Uuid
+  traveller        User     @relation(fields: [travellerId], references: [id])
+
+  from             String
+  to               String
+  departureDate    DateTime
+  returnDate       DateTime?
+
+  luggageWeight    Int
+  maxTripPerDay    Int?
+
+  tripStatus       TripStatus @default(PENDING)
+
+  pricePerUnit     Float
+  currency         String
+  tripNotes        String
+
+  tripDurationDays Int?
+
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}

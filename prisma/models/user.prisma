@@ -17,6 +17,7 @@ model User {
     otpExpiry DateTime?
     oauthProvider String?
     carrierProfile CarrierProfile?
+    trips Trip[]
 }
 
 

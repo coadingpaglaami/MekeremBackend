@@ -6,11 +6,12 @@ import { AuthModule } from './auth/auth.module.js';
 import { MailModule } from './mail/mail.module.js';
 import { TravellerModule } from './traveller/traveller.module.js';
 import { RoleModule } from './roles/role.module.js';
+import { UploadModule } from './upload/upload.module.js';
 
 
 
 @Module({
-  imports:[PrismaModule, AuthModule,MailModule, TravellerModule,RoleModule],
+  imports:[PrismaModule, AuthModule,MailModule, TravellerModule,RoleModule,UploadModule],
   controllers: [AppController],
   providers: [AppService],
 })

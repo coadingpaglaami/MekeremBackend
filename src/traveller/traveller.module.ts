@@ -5,12 +5,14 @@ import { JwtStrategy } from '../auth/jwt.strategy.js';
 import { AuthModule } from '../auth/auth.module.js';
 import { RoleModule } from '../roles/role.module.js';
 import { PrismaModule } from '../database/prisma.module.js';
+import { UploadModule } from '../upload/upload.module.js';
 
 @Module({
   imports: [
     PrismaModule,
     AuthModule,
-    RoleModule
+    RoleModule,
+    UploadModule
   ],
   controllers: [TravellerController],
   providers: [
