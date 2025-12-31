@@ -6,6 +6,13 @@ enum TripStatus {
   CANCELLED
 }
 
+enum TransportType {
+  AIR
+  ROAD
+  RAIL
+  SEA
+}
+
 model Trip {
   id               String   @id @default(uuid()) @db.Uuid
   travellerId      String   @db.Uuid
@@ -20,9 +27,9 @@ model Trip {
   maxTripPerDay    Int?
 
   tripStatus       TripStatus @default(PENDING)
-
+  transportType    TransportType
   pricePerUnit     Float
-  currency         String
+  currency         String?
   tripNotes        String
 
   tripDurationDays Int?

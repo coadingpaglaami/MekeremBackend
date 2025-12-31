@@ -18,6 +18,7 @@ import { CarrierProfile } from 'src/database/prisma-client/client.js';
 import { TravellerVerifyGuard } from '../roles/guard/verify.guard.js';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { multerConfig } from '../upload/multer.confit.js';
+import type { CreateTripDto, TripResponseDto }  from './dto/create-trip.dto.js';
 
 @Controller('traveller')
 export class TravellerController {
@@ -58,8 +59,8 @@ export class TravellerController {
   @Post('trip-create')
   async createTrip(
     @Req() req: Request,
-    @Body() tripDetails: any,
-  ): Promise<any> {
-    return await this.travellerService.createTrip(req, tripDetails);
+    @Body() createTripDto: CreateTripDto ,
+  ): Promise<TripResponseDto> {
+    return await this.travellerService.createTrip(req, createTripDto);
   }
 }
