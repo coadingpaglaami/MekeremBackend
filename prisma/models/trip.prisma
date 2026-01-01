@@ -24,7 +24,7 @@ model Trip {
   returnDate       DateTime?
 
   luggageWeight    Int
-  maxTripPerDay    Int?
+
 
   tripStatus       TripStatus @default(PENDING)
   transportType    TransportType

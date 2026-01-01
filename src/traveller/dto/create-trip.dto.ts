@@ -18,3 +18,18 @@ export interface TripResponseDto {
   message: string;
   trip: CreateTripDto;
 }
+
+export type GetTravellerTripsDto = Omit<
+  RequiredFields,
+  'pricePerUnit' | 'transportType'
+> & { id: string };
+
+export interface GetTravellerTripsResponseDto {
+  meta: {
+    totalPages: number;
+    currentPage: number;
+    totalItems: number;
+    limit: number;
+  };
+  data: GetTravellerTripsDto[];
+}

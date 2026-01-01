@@ -41,5 +41,7 @@ model CarrierProfile {
     state String?
     postalCode String?
     country String?
+    maxTripPerDay    Int?
+    carrierRating Float? @default(5.0)
     isVerified Boolean? @default(false)
 }

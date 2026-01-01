@@ -3,7 +3,11 @@ import { CarrierProfile } from 'src/database/prisma-client/client';
 import { PrismaService } from '../database/prisma.service.js';
 import type { Request } from 'express';
 import { UploadService } from '../upload/upload.service.js';
-import { CreateTripDto, TripResponseDto } from './dto/create-trip.dto.js';
+import {
+  CreateTripDto,
+  GetTravellerTripsResponseDto,
+  TripResponseDto,
+} from './dto/create-trip.dto.js';
 
 @Injectable()
 export class TravellerService {
@@ -167,5 +171,51 @@ export class TravellerService {
     });
 
     return { message: 'Trip created successfully', trip: trip };
+  }
+
+  async travellerTrips(
+    req: Request,
+    page: number,
+    limit: number,
+  ): Promise<GetTravellerTripsResponseDto> {
+    const userId = req.user && (req.user as any).sub;
+    if (!userId) {
+      throw new Error('User not found in request');
+    }
+    const traveller = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+    if (!traveller) {
+      throw new Error('Traveller not found');
+    }
+    const trips = await this.prisma.trip.findMany({
+      where: { travellerId: traveller.id },
+      skip: (page - 1) * limit,
+      take: limit,
+      orderBy: { departureDate: 'desc' },
+      select: {
+        id: true,
+        from: true,
+        to: true,
+        departureDate: true,
+        returnDate: true,
+        luggageWeight: true,
+        tripNotes: true,
+      },
+    });
+
+    const totalTrips = await this.prisma.trip.count({
+      where: { travellerId: traveller.id },
+    });
+
+    return {
+      meta: {
+        totalPages: Math.ceil(totalTrips / limit),
+        currentPage: page,
+        totalItems: totalTrips,
+        limit,
+      },
+      data: trips,
+    };
   }
 }
