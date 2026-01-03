@@ -24,12 +24,15 @@ export type GetTravellerTripsDto = Omit<
   'pricePerUnit' | 'transportType'
 > & { id: string };
 
-export interface GetTravellerTripsResponseDto {
-  meta: {
-    totalPages: number;
-    currentPage: number;
-    totalItems: number;
-    limit: number;
-  };
-  data: GetTravellerTripsDto[];
+export interface Meta {
+  totalPages: number;
+  currentPage: number;
+  totalItems: number;
+  limit: number;
 }
+
+export interface GetTravellerTripsResponseDto {
+  meta: Meta;
+  data: GetTravellerTripsDto[];
+} 
+    

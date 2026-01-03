@@ -18,6 +18,7 @@ model User {
     oauthProvider String?
     carrierProfile CarrierProfile?
     trips Trip[]
+    sendRequests SendRequest[]
 }
 
 
