@@ -19,5 +19,6 @@ import { UploadModule } from '../upload/upload.module.js';
     TravellerService,
     JwtStrategy,
   ],
+  exports: [TravellerService],
 })
 export class TravellerModule {}
