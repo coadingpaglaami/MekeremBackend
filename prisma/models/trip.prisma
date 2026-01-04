@@ -52,7 +52,7 @@ model SendRequest{
   trip          Trip     @relation(fields: [tripId], references: [id])
   requestMessage String
   status        requestStatus @default(PENDING)
-  productWeight Int
+  productWeight String
   productImage String[]
   createdAt     DateTime @default(now())
 }

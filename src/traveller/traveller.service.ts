@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CarrierProfile } from 'src/database/prisma-client/client';
 import { PrismaService } from '../database/prisma.service.js';
 import type { Request } from 'express';
@@ -6,6 +6,8 @@ import { UploadService } from '../upload/upload.service.js';
 import {
   CreateTripDto,
   GetTravellerTripsResponseDto,
+  Meta,
+  SendRequestResponseDto,
   TripResponseDto,
 } from './dto/create-trip.dto.js';
 
@@ -216,6 +218,71 @@ export class TravellerService {
         limit,
       },
       data: trips,
+    };
+  }
+
+  async sendRequests(
+    req: Request,
+    page: number,
+    limit: number,
+  ): Promise<{ data: SendRequestResponseDto[]; meta: Meta }> {
+    const userId = req.user && (req.user as any).sub;
+    if (!userId) {
+      throw new BadRequestException('User not found in request');
+    }
+    const traveller = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+    if (!traveller) {
+      throw new BadRequestException('Traveller not found');
+    }
+    const sendRequestRecord = await this.prisma.sendRequest.findMany({
+      where: {
+        trip: {
+          travellerId: traveller.id,
+        },
+      },
+      skip: (page - 1) * limit,
+      take: limit,
+      select: {
+        tripId: true,
+        id: true,
+        status: true,
+        productWeight: true,
+        productImage: true,
+        requestMessage: true,
+        trip: {
+          select: {
+            from: true,
+            to: true,
+            departureDate: true,
+            pricePerUnit: true,
+          },
+        },
+        sender: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+    });
+    const totalSendRequests = await this.prisma.sendRequest.count({
+      where: {
+        trip: {
+          travellerId: traveller.id,
+        },
+      },
+    });
+
+    return {
+      data: sendRequestRecord,
+      meta: {
+        totalPages: Math.ceil(totalSendRequests / limit),
+        currentPage: page,
+        totalItems: totalSendRequests,
+        limit,
+      },
     };
   }
 }

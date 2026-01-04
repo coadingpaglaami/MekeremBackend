@@ -20,7 +20,12 @@ import { CarrierProfile, Role } from '../database/prisma-client/client.js';
 import { TravellerVerifyGuard } from '../roles/guard/verify.guard.js';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { multerConfig } from '../upload/multer.confit.js';
-import type { CreateTripDto, TripResponseDto } from './dto/create-trip.dto.js';
+import {
+  Meta,
+  type CreateTripDto,
+  type SendRequestResponseDto,
+  type TripResponseDto,
+} from './dto/create-trip.dto.js';
 
 const traveller = Role.TRAVELLER;
 @Controller('traveller')
@@ -81,5 +86,11 @@ export class TravellerController {
     @Query('limit') limit = 10,
   ) {
     return await this.travellerService.travellerTrips(req, page, limit);
+  }
+  @UseGuards(AuthGuard('jwt'), RolesGuard, TravellerVerifyGuard)
+  @Roles([traveller])
+  @Get('send-requests')
+  async sendRequests(@Req() req: Request,@Query('page') page = 1,@Query('limit') limit = 10): Promise<{data: SendRequestResponseDto[]; meta: Meta}> {
+    return await this.travellerService.sendRequests(req,page,limit);
   }
 }

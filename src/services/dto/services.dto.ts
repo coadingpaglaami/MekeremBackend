@@ -36,5 +36,6 @@ export type SendRequestDto = Pick<
 export interface SendRequestResponseDto {
   sendRequest: SendRequestDto;
   trip: Pick<Trip, 'id' | 'from' | 'to' | 'departureDate'>;
+}
 
-} 
+

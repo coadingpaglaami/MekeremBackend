@@ -45,7 +45,7 @@ export class ServicesController {
   @Roles(['SENDER'])
   @UseInterceptors(
     FileFieldsInterceptor(
-      [{ name: 'productImage', maxCount: 1 }],
+      [{ name: 'productImage', maxCount: 5 }],
       multerConfig,
     ),
   )
@@ -58,7 +58,8 @@ export class ServicesController {
       productImage: Express.Multer.File[];
     },
   ): Promise<SendRequestResponseDto> {
-    console.log(files.productImage)
+    // console.log(files.productImage)
+    sendRequest.productWeight = sendRequest.productWeight || '';
     return await this.servicesService.sendRequestToTrip(
       req,
       tripId,

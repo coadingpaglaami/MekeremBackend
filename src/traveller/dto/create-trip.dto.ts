@@ -1,3 +1,4 @@
+import { SendRequest, User } from 'src/database/prisma-client/browser.js';
 import { Trip } from '../../database/prisma-client/client.js';
 
 export type RequiredFields = Pick<
@@ -34,5 +35,16 @@ export interface Meta {
 export interface GetTravellerTripsResponseDto {
   meta: Meta;
   data: GetTravellerTripsDto[];
-} 
-    
+}
+
+export type SendRequestResponseDto = Pick<
+  SendRequest,
+  | 'tripId'
+  | 'id'
+  | 'status'
+  | 'productWeight'
+  | 'productImage'
+  | 'requestMessage'
+> & { trip: Pick<Trip, 'from' | 'to' | 'departureDate' | 'pricePerUnit'> } & {
+  sender: Pick<User, 'name' | 'id'>;
+};

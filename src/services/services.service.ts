@@ -51,6 +51,7 @@ export class ServicesService {
         departureDate: 'asc',
       },
       select: {
+        id: true,
         from: true,
         to: true,
         departureDate: true,
@@ -108,17 +109,27 @@ export class ServicesService {
     }
     const trip = await this.prismaService.trip.findUnique({
       where: { id: tripId },
-      select:{
+      select: {
         id: true,
         from: true,
         to: true,
         departureDate: true,
-      }
+      },
     });
     if (!trip) {
       throw new BadRequestException('Trip not found');
     }
-    let {  productWeight, requestMessage } = sendRequest;
+    const requestExists = await this.prismaService.sendRequest.findFirst({
+      where: {
+        senderId: user.id,
+        tripId: tripId,
+      },
+    });
+    if (requestExists) {
+      throw new BadRequestException('Request already sent for this trip');
+    }
+    const { productWeight, requestMessage } = sendRequest;
+    console.log(productWeight, requestMessage);
     let productImage: string[] = [];
     if (files.productImage && files.productImage.length > 0) {
       productImage = await this.uploadService.uploadMultipleFiles(
@@ -130,7 +141,7 @@ export class ServicesService {
       data: {
         senderId: user.id,
         productImage: productImage,
-        productWeight: productWeight,
+        productWeight: productWeight || '',
         requestMessage: requestMessage,
         tripId: tripId,
       },
