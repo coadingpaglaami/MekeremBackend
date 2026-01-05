@@ -1,5 +1,8 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { CarrierProfile } from 'src/database/prisma-client/client';
+import {
+  CarrierProfile,
+  requestStatus,
+} from 'src/database/prisma-client/client';
 import { PrismaService } from '../database/prisma.service.js';
 import type { Request } from 'express';
 import { UploadService } from '../upload/upload.service.js';
@@ -283,6 +286,55 @@ export class TravellerService {
         totalItems: totalSendRequests,
         limit,
       },
+    };
+  }
+  async updateRequestStatus(
+    id: string,
+    status: string,
+    req: Request,
+  ): Promise<{ message: string }> {
+    const allowedStatuses: requestStatus[] = [
+      'PENDING',
+      'ACCEPTED',
+      'REJECTED',
+    ];
+    console.log(status);
+    if (!allowedStatuses.includes(status as requestStatus)) {
+      throw new BadRequestException(
+        `Invalid status. Allowed values: ${allowedStatuses.join(', ')}`,
+      );
+    }
+    const userId = req.user && (req.user as any).sub;
+    if (!userId) {
+      throw new BadRequestException('User not found in request');
+    }
+    const traveller = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+    if (!traveller) {
+      throw new BadRequestException('Traveller not found');
+    }
+    const sendRequest = await this.prisma.sendRequest.findUnique({
+      where: { id, trip: { travellerId: traveller.id } },
+    });
+    if (!sendRequest) {
+      throw new BadRequestException('Send request not found');
+    }
+    if (sendRequest.status === status)
+      throw new BadRequestException(`Request is already in ${status} status`);
+    const updatedSendRequest = await this.prisma.sendRequest.update({
+      where: { id },
+      data: {
+        status: status as requestStatus,
+      },
+      select: {
+        id: true,
+        status: true,
+        tripId: true,
+      },
+    });
+    return {
+      message: ` Request status for ${updatedSendRequest.id} for trip ${updatedSendRequest.tripId} updated to ${updatedSendRequest.status}`,
     };
   }
 }

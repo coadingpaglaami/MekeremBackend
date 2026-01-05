@@ -16,7 +16,11 @@ import { AuthGuard } from '@nestjs/passport';
 import { Roles } from '../roles/decorators/role.decorator.js';
 import type { Request } from 'express';
 import { RolesGuard } from '../roles/guard/roles.guard.js';
-import { CarrierProfile, Role } from '../database/prisma-client/client.js';
+import {
+  CarrierProfile,
+  requestStatus,
+  Role,
+} from '../database/prisma-client/client.js';
 import { TravellerVerifyGuard } from '../roles/guard/verify.guard.js';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { multerConfig } from '../upload/multer.confit.js';
@@ -90,7 +94,21 @@ export class TravellerController {
   @UseGuards(AuthGuard('jwt'), RolesGuard, TravellerVerifyGuard)
   @Roles([traveller])
   @Get('send-requests')
-  async sendRequests(@Req() req: Request,@Query('page') page = 1,@Query('limit') limit = 10): Promise<{data: SendRequestResponseDto[]; meta: Meta}> {
-    return await this.travellerService.sendRequests(req,page,limit);
+  async sendRequests(
+    @Req() req: Request,
+    @Query('page') page = 1,
+    @Query('limit') limit = 10,
+  ): Promise<{ data: SendRequestResponseDto[]; meta: Meta }> {
+    return await this.travellerService.sendRequests(req, page, limit);
+  }
+  @UseGuards(AuthGuard('jwt'), RolesGuard, TravellerVerifyGuard)
+  @Roles([traveller])
+  @Patch('request-status/:id')
+  async changeRequestStatus(
+    @Req() req: Request,
+    @Param('id') id: string,
+    @Body() body: { status: string }, // <-- full bod,
+  ): Promise<{ message: string }> {
+    return await this.travellerService.updateRequestStatus(id, body.status, req);
   }
 }

@@ -1,6 +1,5 @@
 import { SendRequest, User } from 'src/database/prisma-client/browser.js';
 import { Trip } from '../../database/prisma-client/client.js';
-
 export type RequiredFields = Pick<
   Trip,
   | 'from'
@@ -48,3 +47,5 @@ export type SendRequestResponseDto = Pick<
 > & { trip: Pick<Trip, 'from' | 'to' | 'departureDate' | 'pricePerUnit'> } & {
   sender: Pick<User, 'name' | 'id'>;
 };
+
+
