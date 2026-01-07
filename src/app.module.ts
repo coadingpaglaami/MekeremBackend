@@ -9,11 +9,12 @@ import { RoleModule } from './roles/role.module.js';
 import { UploadModule } from './upload/upload.module.js';
 import { ServicesModule } from './services/services.module.js';
 import { TestModule } from './test/test.module.js';
+import { SocketModule } from './socket/socket.module.js';
 
 
 
 @Module({
-  imports:[PrismaModule, AuthModule,MailModule, TravellerModule,RoleModule,UploadModule, ServicesModule, TestModule],
+  imports:[PrismaModule, AuthModule,MailModule, TravellerModule,RoleModule,UploadModule, ServicesModule, TestModule, SocketModule],
   controllers: [AppController],
   providers: [AppService],
 })

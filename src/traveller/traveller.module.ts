@@ -6,13 +6,15 @@ import { AuthModule } from '../auth/auth.module.js';
 import { RoleModule } from '../roles/role.module.js';
 import { PrismaModule } from '../database/prisma.module.js';
 import { UploadModule } from '../upload/upload.module.js';
+import { SocketModule } from '../socket/socket.module.js';
 
 @Module({
   imports: [
     PrismaModule,
     AuthModule,
     RoleModule,
-    UploadModule
+    UploadModule,
+    SocketModule
   ],
   controllers: [TravellerController],
   providers: [

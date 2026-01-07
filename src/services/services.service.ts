@@ -58,6 +58,7 @@ export class ServicesService {
         luggageWeight: true,
         pricePerUnit: true,
         tripNotes: true,
+        tripStatus: true,
         traveller: {
           select: {
             id: true,

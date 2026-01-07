@@ -13,12 +13,14 @@ import {
   SendRequestResponseDto,
   TripResponseDto,
 } from './dto/create-trip.dto.js';
+import { SocketService } from '../socket/socket.service.js';
 
 @Injectable()
 export class TravellerService {
   constructor(
     private prisma: PrismaService,
     private uploadService: UploadService,
+    private socketService: SocketService,
   ) {}
 
   async getTravellerInfo(
@@ -248,8 +250,8 @@ export class TravellerService {
       skip: (page - 1) * limit,
       take: limit,
       select: {
-        tripId: true,
         id: true,
+        tripId: true,
         status: true,
         productWeight: true,
         productImage: true,
@@ -298,7 +300,6 @@ export class TravellerService {
       'ACCEPTED',
       'REJECTED',
     ];
-    console.log(status);
     if (!allowedStatuses.includes(status as requestStatus)) {
       throw new BadRequestException(
         `Invalid status. Allowed values: ${allowedStatuses.join(', ')}`,
@@ -331,8 +332,20 @@ export class TravellerService {
         id: true,
         status: true,
         tripId: true,
+        senderId: true,
       },
     });
+
+    // Emit socket event to notify sender about status change
+    this.socketService.emitToUser(
+      updatedSendRequest.senderId,
+      'requestStatusUpdated',
+      {
+        requestId: updatedSendRequest.id,
+        status: updatedSendRequest.status,
+        tripId: updatedSendRequest.tripId,
+      },
+    );
     return {
       message: ` Request status for ${updatedSendRequest.id} for trip ${updatedSendRequest.tripId} updated to ${updatedSendRequest.status}`,
     };

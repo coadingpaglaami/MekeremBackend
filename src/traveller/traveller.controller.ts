@@ -18,7 +18,6 @@ import type { Request } from 'express';
 import { RolesGuard } from '../roles/guard/roles.guard.js';
 import {
   CarrierProfile,
-  requestStatus,
   Role,
 } from '../database/prisma-client/client.js';
 import { TravellerVerifyGuard } from '../roles/guard/verify.guard.js';
