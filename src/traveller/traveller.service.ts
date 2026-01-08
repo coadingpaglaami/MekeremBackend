@@ -14,6 +14,7 @@ import {
   TripResponseDto,
 } from './dto/create-trip.dto.js';
 import { SocketService } from '../socket/socket.service.js';
+import { NotificationService } from '../notification/notification.service.js';
 
 @Injectable()
 export class TravellerService {
@@ -21,6 +22,7 @@ export class TravellerService {
     private prisma: PrismaService,
     private uploadService: UploadService,
     private socketService: SocketService,
+    private notificationService: NotificationService,
   ) {}
 
   async getTravellerInfo(
@@ -336,6 +338,18 @@ export class TravellerService {
       },
     });
 
+    await this.notificationService.create({
+      userId: updatedSendRequest.senderId,
+      type: 'REQUEST_STATUS',
+      title: 'Request Accepted',
+      message: `Your request for trip ${updatedSendRequest.tripId} was accepted`,
+      data: {
+        requestId: updatedSendRequest.id,
+        tripId: updatedSendRequest.tripId,
+        status: updatedSendRequest.status,
+      },
+    });
+
     // Emit socket event to notify sender about status change
     this.socketService.emitToUser(
       updatedSendRequest.senderId,
@@ -346,6 +360,7 @@ export class TravellerService {
         tripId: updatedSendRequest.tripId,
       },
     );
+
     return {
       message: ` Request status for ${updatedSendRequest.id} for trip ${updatedSendRequest.tripId} updated to ${updatedSendRequest.status}`,
     };

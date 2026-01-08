@@ -1,0 +1,23 @@
+enum NotificationType {
+    REQUEST_STATUS
+    ADMIN_APPROVAL
+    PAYMENT_APPROVAL
+    PAYMENT_FAILED
+    SYSTEM
+}
+
+model Notification {
+  id        String   @default(uuid()) @id @db.Uuid
+  userId    String   @db.Uuid
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      NotificationType
+  title     String
+  message   String
+  data      Json?
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+ 
+
+  @@index([userId, isRead])
+}

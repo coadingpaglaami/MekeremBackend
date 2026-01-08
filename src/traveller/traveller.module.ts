@@ -7,6 +7,7 @@ import { RoleModule } from '../roles/role.module.js';
 import { PrismaModule } from '../database/prisma.module.js';
 import { UploadModule } from '../upload/upload.module.js';
 import { SocketModule } from '../socket/socket.module.js';
+import { NotificationModule } from '../notification/notification.module.js';
 
 @Module({
   imports: [
@@ -14,7 +15,8 @@ import { SocketModule } from '../socket/socket.module.js';
     AuthModule,
     RoleModule,
     UploadModule,
-    SocketModule
+    SocketModule,
+    NotificationModule,
   ],
   controllers: [TravellerController],
   providers: [

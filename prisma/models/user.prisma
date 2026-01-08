@@ -19,6 +19,7 @@ model User {
     carrierProfile CarrierProfile?
     trips Trip[]
     sendRequests SendRequest[]
+    notifications Notification[]
 }
 
 
