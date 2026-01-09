@@ -1,0 +1,46 @@
+enum MessageType {
+  TEXT
+  IMAGE
+  VIDEO
+  AUDIO
+  FILE
+}
+
+model Message {
+  id             String       @id @default(uuid()) @db.Uuid
+  conversationId String       @db.Uuid
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  senderId String @db.Uuid
+  sender   User   @relation(fields: [senderId], references: [id])
+
+  content   String
+  createdAt DateTime @default(now())
+
+  messageType MessageType @default(TEXT)
+  trip        Trip?       @relation(fields: [tripId], references: [id])
+  tripId      String?     @db.Uuid
+}
+
+model Conversation {
+  id String @id @default(uuid()) @db.Uuid
+
+  participants ConversationParticipant[]
+  messages     Message[]
+  tripId       String?                   @db.Uuid
+  trip         Trip?                     @relation(fields: [tripId], references: [id])
+
+  createdAt DateTime @default(now())
+}
+
+model ConversationParticipant {
+  id String @id @default(uuid()) @db.Uuid
+
+  conversationId String       @db.Uuid
+  conversation   Conversation @relation(fields: [conversationId], references: [id])
+
+  userId String @db.Uuid
+  user   User   @relation(fields: [userId], references: [id])
+
+  @@unique([conversationId, userId])
+}

@@ -14,29 +14,30 @@ enum TransportType {
 }
 
 model Trip {
-  id               String   @id @default(uuid()) @db.Uuid
-  travellerId      String   @db.Uuid
-  traveller        User     @relation(fields: [travellerId], references: [id])
+  id          String @id @default(uuid()) @db.Uuid
+  travellerId String @db.Uuid
+  traveller   User   @relation(fields: [travellerId], references: [id])
 
-  from             String
-  to               String
-  departureDate    DateTime
-  returnDate       DateTime?
+  from          String
+  to            String
+  departureDate DateTime
+  returnDate    DateTime?
 
-  luggageWeight    Int
+  luggageWeight Int
 
-
-  tripStatus       TripStatus @default(PENDING)
-  transportType    TransportType
-  pricePerUnit     Float
-  currency         String?
-  tripNotes        String
+  tripStatus    TripStatus    @default(PENDING)
+  transportType TransportType
+  pricePerUnit  Float
+  currency      String?
+  tripNotes     String
 
   tripDurationDays Int?
   sendRequests     SendRequest[]
+  messages         Message[]
 
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  conversations Conversation[]
 }
 
 enum requestStatus {
@@ -44,15 +45,16 @@ enum requestStatus {
   ACCEPTED
   REJECTED
 }
-model SendRequest{
-  id           String   @id @default(uuid()) @db.Uuid
-  senderId      String   @db.Uuid
-  sender        User     @relation(fields: [senderId], references: [id])
-  tripId        String   @db.Uuid
-  trip          Trip     @relation(fields: [tripId], references: [id])
+
+model SendRequest {
+  id             String        @id @default(uuid()) @db.Uuid
+  senderId       String        @db.Uuid
+  sender         User          @relation(fields: [senderId], references: [id])
+  tripId         String        @db.Uuid
+  trip           Trip          @relation(fields: [tripId], references: [id])
   requestMessage String
-  status        requestStatus @default(PENDING)
-  productWeight String
-  productImage String[]
-  createdAt     DateTime @default(now())
+  status         requestStatus @default(PENDING)
+  productWeight  String
+  productImage   String[]
+  createdAt      DateTime      @default(now())
 }

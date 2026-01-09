@@ -5,12 +5,9 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 generator client {
   provider = "prisma-client"
-  output   = "../src/database/prisma-client" 
+  output   = "../src/database/prisma-client"
 }
 
 datasource db {
   provider = "postgresql"
 }
-
-
-

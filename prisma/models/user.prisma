@@ -1,49 +1,51 @@
 enum Role {
-    TRAVELLER
-    SENDER
-    ADMIN
+  TRAVELLER
+  SENDER
+  ADMIN
 }
 
 model User {
-    id String @default(uuid()) @id @db.Uuid
-    email String @unique
-    name String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-    role Role 
-    password String?
-    refreshToken String?
-    otp String?
-    otpExpiry DateTime?
-    oauthProvider String?
-    carrierProfile CarrierProfile?
-    trips Trip[]
-    sendRequests SendRequest[]
-    notifications Notification[]
+  id             String          @id @default(uuid()) @db.Uuid
+  email          String          @unique
+  name           String
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  role           Role
+  password       String?
+  refreshToken   String?
+  otp            String?
+  otpExpiry      DateTime?
+  oauthProvider  String?
+  carrierProfile CarrierProfile?
+  trips          Trip[]
+  sendRequests   SendRequest[]
+  notifications  Notification[]
+  messageSent    Message[]
+
+  conversations ConversationParticipant[]
 }
 
-
 model CarrierProfile {
-    id String @default(uuid()) @id @db.Uuid
-    userId String @unique @db.Uuid  // <-- Add @db.Uuid here
-    user User @relation(fields: [userId], references: [id])
-    dateOfBirth DateTime
-    nationality String
-    phoneNumber String
-    nidNumber String
-    nidFrontImage String?
-    nidBackImage String?
-    passportImage String?
-    drivingLicenseFront String?
-    drivingLicenseBack String?
-    selfies String[]
-    addressLineOne String?
-    addressLineTwo String?
-    city String?
-    state String?
-    postalCode String?
-    country String?
-    maxTripPerDay    Int?
-    carrierRating Float? @default(5.0)
-    isVerified Boolean? @default(false)
+  id                  String   @id @default(uuid()) @db.Uuid
+  userId              String   @unique @db.Uuid // <-- Add @db.Uuid here
+  user                User     @relation(fields: [userId], references: [id])
+  dateOfBirth         DateTime
+  nationality         String
+  phoneNumber         String
+  nidNumber           String
+  nidFrontImage       String?
+  nidBackImage        String?
+  passportImage       String?
+  drivingLicenseFront String?
+  drivingLicenseBack  String?
+  selfies             String[]
+  addressLineOne      String?
+  addressLineTwo      String?
+  city                String?
+  state               String?
+  postalCode          String?
+  country             String?
+  maxTripPerDay       Int?
+  carrierRating       Float?   @default(5.0)
+  isVerified          Boolean? @default(false)
 }
